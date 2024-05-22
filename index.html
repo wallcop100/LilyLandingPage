@@ -54,6 +54,7 @@
     #socials-container a {
       color: white;
       font-size: 3rem;
+      padding-top: 10rem;
       padding-left: 3rem;
       padding-right: 3rem;
       padding-bottom: 0rem;
@@ -63,13 +64,18 @@
       background-color: #c8c5e6; /* Light blue from background colors */
       padding: 1rem 2rem;
       border: none;
-      border-radius: 5px;
+      border-radius: 50px;
       color: white;
       font-family: 'Poppins';
       font-size: 1rem;
       cursor: pointer;
-      margin-top: 1rem;
+      
+      padding-bottom: ;
       align-self: center; /* Center button horizontally within #test */
+    }
+
+    #button-container{
+        padding-top: 2rem;
     }
 
     /* Media query for smaller screens */
@@ -85,16 +91,26 @@
     <div class="banner-box">
       <h1>Lily Rees</h1>
       <h2>Multimedia Artist</h2>
+
+      <div id="socials-container">
+        <a href="https://www.linkedin.com/in/lilyrees/"> <i class="fa fa-linkedin" aria-hidden="true"></i>
+        </a>
+        <a href="https://instagram.com/lilybillylily_/"> <i class="fa fa-instagram" aria-hidden="true"></i>
+        </a>
+        <a href="mailto:contact@lilyrees.co.uk"> <i class="fa fa-envelope-o" aria-hidden="true"></i>
+        </a>
+      </div>
+      <div id="button-container"></div>
+        <button class="button", onclick="window.location.href='https://blocks.lilyrees.co.uk'">Latest Project</button>
+
     </div>
-    <div id="socials-container">
-      <a href="https://www.linkedin.com/in/lilyrees/"> <i class="fa fa-linkedin" aria-hidden="true"></i>
-      </a>
-      <a href="https://instagram.com/lilybillylily_/"> <i class="fa fa-instagram" aria-hidden="true"></i>
-      </a>
-      <a href="mailto:contact@lilyrees.co.uk"> <i class="fa fa-envelope-o" aria-hidden="true"></i>
-      </a>
-    </div>
-    <button class="button", onclick="window.location.href='https://blocks.lilyrees.co.uk'">Latest Project</button>
+    
+
+    
+    
+
+
+    
   </div>
 
   <script src="https://kit.fontawesome.com/your_fontawesome_kit_id.js"></script> <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
