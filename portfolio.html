@@ -89,6 +89,15 @@
         });
     }
     
+    // Add this function before your DOMContentLoaded event listener
+    function loadHighResImage(imgElement, highResPath) {
+      const highResImage = new Image();
+      highResImage.onload = function() {
+        imgElement.src = highResPath;
+      };
+      highResImage.src = highResPath;
+    }
+
     // Modified script section for sorting
     document.addEventListener('DOMContentLoaded', async () => {
       const imageGrid = document.getElementById('imageGrid');
@@ -146,10 +155,21 @@
           }
           
           const img = document.createElement('img');
-          const imageUrl = `${baseUrl}/${firstImage.Image[0].signedPath}`;
+          const highResPath = firstImage.Image[0].signedPath;
+          const lowResPath = highResPath.replace('/images/', '/images/low_res/');
           
-          img.src = imageUrl;
-          img.style.cssText = 'width: 100%; height: 100%; object-fit: cover;';
+          // Set low-res image first
+          img.src = lowResPath;
+          img.style.cssText = 'width: 100%; height: 100%; object-fit: cover; transition: filter 0.3s ease;';
+          img.style.filter = 'blur(5px)'; // Optional: add blur while loading
+          
+          // Load high-res version
+          loadHighResImage(img, highResPath);
+          
+          // Remove blur when high-res is loaded
+          img.onload = function() {
+            img.style.filter = 'none';
+          };
           
           const description = document.createElement('div');
           description.className = 'image-description';
@@ -195,7 +215,20 @@
 
       function updateGallery() {
         const currentImage = images[currentIndex];
-        galleryImage.src = `${baseUrl}/${currentImage.Image[0].signedPath}`;
+        const highResPath = `${baseUrl}/${currentImage.Image[0].signedPath}`;
+        const lowResPath = highResPath.replace('/images/', '/images/low_res/');
+        
+        // Set low-res first
+        galleryImage.src = lowResPath;
+        galleryImage.style.filter = 'blur(5px)';
+        
+        // Load high-res
+        loadHighResImage(galleryImage, highResPath);
+        
+        galleryImage.onload = function() {
+          galleryImage.style.filter = 'none';
+        };
+        
         galleryTitle.textContent = group;
 
         // Remove existing text overlay
