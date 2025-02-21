@@ -91,11 +91,37 @@
     
     // Add this function before your DOMContentLoaded event listener
     function loadHighResImage(imgElement, highResPath) {
-      const highResImage = new Image();
-      highResImage.onload = function() {
-        imgElement.src = highResPath;
-      };
-      highResImage.src = highResPath;
+      if (imgElement.dataset.loading !== 'true') {
+        imgElement.dataset.loading = 'true';
+        
+        // Create new image object for high-res version
+        const highResImage = new Image();
+        
+        // Only switch to high-res after it's fully loaded
+        highResImage.onload = function() {
+          // Add blur before switching
+          requestAnimationFrame(() => {
+            imgElement.style.filter = 'blur(2px)';
+            
+            // Small delay to ensure blur is visible
+            setTimeout(() => {
+              // Switch to high-res only after it's fully loaded
+              imgElement.src = highResPath;
+              
+              // Remove blur after new image is loaded
+              imgElement.onload = function() {
+                requestAnimationFrame(() => {
+                  imgElement.style.filter = 'none';
+                  imgElement.dataset.loading = 'false';
+                });
+              };
+            }, 50);
+          });
+        };
+        
+        // Start loading high-res version in the background
+        highResImage.src = highResPath;
+      }
     }
 
     // Modified script section for sorting
@@ -144,7 +170,7 @@
         }
       });
 
-      // Create grid with visible images
+      // Update the grid image creation part
       visibleImages.forEach(({ firstImage, group, allImages }) => {
         if (firstImage.Image?.[0]?.signedPath) {
           const container = document.createElement('div');
@@ -158,18 +184,32 @@
           const highResPath = firstImage.Image[0].signedPath;
           const lowResPath = highResPath.replace('/images/', '/images/low_res/');
           
-          // Set low-res image first
-          img.src = lowResPath;
+          // Set initial styles
           img.style.cssText = 'width: 100%; height: 100%; object-fit: cover; transition: filter 0.3s ease;';
-          img.style.filter = 'blur(5px)'; // Optional: add blur while loading
+          img.loading = 'lazy'; // Add lazy loading for grid view
           
-          // Load high-res version
-          loadHighResImage(img, highResPath);
+          // Start with low-res
+          img.src = lowResPath;
           
-          // Remove blur when high-res is loaded
-          img.onload = function() {
-            img.style.filter = 'none';
-          };
+          // Only load high-res when low-res is fully loaded and visible
+          const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+              if (entry.isIntersecting) {
+                // Wait for low-res to load first
+                img.onload = function() {
+                  // Delay high-res loading
+                  setTimeout(() => {
+                    loadHighResImage(img, highResPath);
+                  }, 500);
+                };
+                observer.unobserve(img);
+              }
+            });
+          }, {
+            rootMargin: '50px'
+          });
+          
+          observer.observe(img);
           
           const description = document.createElement('div');
           description.className = 'image-description';
@@ -215,18 +255,21 @@
 
       function updateGallery() {
         const currentImage = images[currentIndex];
-        const highResPath = `${baseUrl}/${currentImage.Image[0].signedPath}`;
+        const highResPath = currentImage.Image[0].signedPath;
         const lowResPath = highResPath.replace('/images/', '/images/low_res/');
         
-        // Set low-res first
+        // Clear any existing loading state
+        galleryImage.dataset.loading = 'false';
+        galleryImage.style.filter = 'none';
+        
+        // Load low-res first
         galleryImage.src = lowResPath;
-        galleryImage.style.filter = 'blur(5px)';
         
-        // Load high-res
-        loadHighResImage(galleryImage, highResPath);
-        
+        // Wait for low-res to load before starting high-res
         galleryImage.onload = function() {
-          galleryImage.style.filter = 'none';
+          setTimeout(() => {
+            loadHighResImage(galleryImage, highResPath);
+          }, 500); // Increased delay to 500ms
         };
         
         galleryTitle.textContent = group;
