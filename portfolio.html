@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Responsive Portfolio</title>
+  <link href='portfolio.css' rel='stylesheet'>
+</head>
+<body>
+  <div class="container">
+  <a href="index.html" class="site-link">
+    lilyrees.co.uk <span class="arrow">→</span>
+  </a>
+    <div class="content">
+      <h1>Portfolio</h1>
+
+      <div class="image-grid large" id="imageGrid">
+        <!-- Images will be dynamically inserted here -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Function to fetch data from NocoDB
+    async function fetchNocoDBData() {
+      const apiKey = 'WfU95i4RbnJeBemdjqW8PDHGCMCfOq6bu3uYwfYr';
+      const tableId = 'mlh8tpnjjm24ci0';
+      const baseUrl = 'http://pathfinder.local:8080';
+      const url = `${baseUrl}/api/v2/tables/${tableId}/records`;
+
+      try {
+        const response = await fetch(url, {
+          headers: {
+            'xc-token': apiKey,
+            'Accept': 'application/json'
+          }
+        });
+        
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('Response error:', {
+            status: response.status,
+            statusText: response.statusText,
+            body: errorText
+          });
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        console.log('Fetched data:', data);
+        return data.list || data || [];
+      } catch (error) {
+        console.error('Error fetching from NocoDB:', error);
+        return [];
+      }
+    }
+
+    // Function to fetch CSV data
+    async function fetchCsvData() {
+        try {
+            const response = await fetch('data.csv');
+            const csvText = await response.text();
+            return parseCsv(csvText);
+        } catch (error) {
+            console.error('Error fetching CSV:', error);
+            return [];
+        }
+    }
+
+    // Function to parse CSV
+    function parseCsv(csvText) {
+        const lines = csvText.trim().split('\n');
+        const headers = lines[0].split(',');
+        
+        return lines.slice(1).map(line => {
+            const values = line.split(',');
+            const row = {};
+            headers.forEach((header, index) => {
+                row[header.trim()] = values[index]?.trim() || '';
+            });
+            return {
+                Image: [{signedPath: row.Image}],
+                Description: row.Description,
+                Group: row.Group,
+                LargeTile: parseInt(row.LargeTile) || 0,
+                'Sort Order': parseInt(row['Sort Order']) || 0,
+                LongFormText: row.backText
+            };
+        });
+    }
+    
+    // Modified script section for sorting
+    document.addEventListener('DOMContentLoaded', async () => {
+      const imageGrid = document.getElementById('imageGrid');
+      const baseUrl = '';
+      
+      // Fetch data from CSV instead of NocoDB
+      const nocoData = await fetchCsvData();
+      
+      // Sort all images by Sort Order first
+      const sortedData = nocoData.sort((a, b) => {
+        const orderA = parseInt(a['Sort Order']) || 0;
+        const orderB = parseInt(b['Sort Order']) || 0;
+        return orderB - orderA; // Higher numbers first
+      });
+      
+      const visibleImages = [];
+      const groupedImages = {};
+      
+      // Group images while maintaining sort order
+      sortedData.forEach(item => {
+        if (item.Group) {
+          if (!groupedImages[item.Group]) {
+            groupedImages[item.Group] = [];
+            // Add first image of group to visible images
+            visibleImages.push({
+              firstImage: item,
+              group: item.Group,
+              allImages: [item]
+            });
+          }
+          groupedImages[item.Group].push(item);
+          // Update allImages for the group
+          const groupIndex = visibleImages.findIndex(v => v.group === item.Group);
+          if (groupIndex !== -1) {
+            visibleImages[groupIndex].allImages = groupedImages[item.Group];
+          }
+        } else {
+          // Add ungrouped images directly
+          visibleImages.push({
+            firstImage: item,
+            group: null,
+            allImages: [item]
+          });
+        }
+      });
+
+      // Create grid with visible images
+      visibleImages.forEach(({ firstImage, group, allImages }) => {
+        if (firstImage.Image?.[0]?.signedPath) {
+          const container = document.createElement('div');
+          container.className = 'image-container';
+          
+          if (firstImage.LargeTile == 1) {
+            container.classList.add('full-width');
+          }
+          
+          const img = document.createElement('img');
+          const imageUrl = `${baseUrl}/${firstImage.Image[0].signedPath}`;
+          
+          img.src = imageUrl;
+          img.style.cssText = 'width: 100%; height: 100%; object-fit: cover;';
+          
+          const description = document.createElement('div');
+          description.className = 'image-description';
+          description.textContent = `${firstImage.Description || ''}`;
+          
+          container.onclick = () => showGallery(group, allImages, baseUrl);
+          
+          container.appendChild(img);
+          container.appendChild(description);
+          imageGrid.appendChild(container);
+        }
+      });
+
+      // Add gallery modal to document
+      document.body.insertAdjacentHTML('beforeend', `
+        <div class="gallery-modal" id="galleryModal">
+          <span class="gallery-close">&times;</span>
+          <div class="gallery-content">
+            <img class="gallery-image" id="galleryImage">
+            <!-- Text overlay will be appended here by JavaScript -->
+            <div class="gallery-nav">
+              <button id="prevImage">&lt;</button>
+              <span id="galleryTitle"></span>
+              <button id="nextImage">&gt;</button>
+            </div>
+          </div>
+        </div>
+      `);
+    });
+
+    function showGallery(group, images, baseUrl) {
+      const modal = document.getElementById('galleryModal');
+      const galleryContent = modal.querySelector('.gallery-content');
+      const galleryImage = document.getElementById('galleryImage');
+      const galleryTitle = document.getElementById('galleryTitle');
+      const closeBtn = modal.querySelector('.gallery-close');
+      const prevBtn = document.getElementById('prevImage');
+      const nextBtn = document.getElementById('nextImage');
+      const galleryNav = document.querySelector('.gallery-nav');
+      let currentIndex = 0;
+      let hoverTimer;
+      let textOverlay;
+
+      function updateGallery() {
+        const currentImage = images[currentIndex];
+        galleryImage.src = `${baseUrl}/${currentImage.Image[0].signedPath}`;
+        galleryTitle.textContent = group;
+
+        // Remove existing text overlay
+        if (textOverlay) {
+          textOverlay.remove();
+          textOverlay = null;
+        }
+
+        // Clear any pending hover timers
+        clearTimeout(hoverTimer);
+
+        // Remove old event listeners to prevent stacking
+        galleryContent.removeEventListener('mouseenter', handleMouseEnter);
+        galleryContent.removeEventListener('mouseleave', handleMouseLeave);
+        galleryContent.removeEventListener('click', handleClick);
+
+        // Add event listeners for the new image
+        galleryContent.addEventListener('mouseenter', handleMouseEnter);
+        galleryContent.addEventListener('mouseleave', handleMouseLeave);
+        galleryContent.addEventListener('click', handleClick);
+      }
+
+      function createTextOverlay(text) {
+        if (!textOverlay) {
+          textOverlay = document.createElement('div');
+          textOverlay.className = 'gallery-text-overlay';
+          galleryContent.appendChild(textOverlay);
+
+          // Create a container for the text
+          const textContainer = document.createElement('div');
+          textContainer.className = 'text-container';
+          textOverlay.appendChild(textContainer);
+
+          // Animate text word by word
+          const words = text.split(' ');
+          words.forEach((word, index) => {
+            const span = document.createElement('span');
+            span.className = 'word';
+            span.textContent = word + ' '; // Ensure space after each word
+            span.style.animationDelay = `${index * 20}ms`; // Adjust delay as needed
+            textContainer.appendChild(span);
+          });
+
+          // Adjust font size based on text length
+          adjustFontSize(textContainer, text);
+
+          // Show overlay
+          textOverlay.classList.add('visible');
+
+          // Start animations
+          setTimeout(() => {
+            textOverlay.classList.add('fade-in');
+          }, 10);
+        }
+      }
+
+      function adjustFontSize(container, text) {
+        let fontSize;
+        if (text.length < 20) {
+          fontSize = '6vw'; // Large font for short text
+        } else if (text.length < 100) {
+          fontSize = '4vw'; // Medium font
+        } else {
+          fontSize = '2vw'; // Small font for long text
+        }
+        container.style.fontSize = fontSize;
+      }
+
+      function handleMouseEnter() {
+        hoverTimer = setTimeout(() => {
+          const currentImage = images[currentIndex];
+          if (currentImage.LongFormText) {
+            createTextOverlay(currentImage.LongFormText);
+          }
+        }, 1000);
+      }
+
+      function handleMouseLeave() {
+        clearTimeout(hoverTimer);
+        if (textOverlay) {
+          textOverlay.classList.remove('fade-in');
+          setTimeout(() => {
+            if (textOverlay) {
+              textOverlay.remove();
+              textOverlay = null;
+            }
+          }, 300);
+        }
+      }
+
+      function handleClick() {
+        const currentImage = images[currentIndex];
+        if (textOverlay) {
+          // If overlay is visible, hide it
+          textOverlay.classList.remove('fade-in');
+          setTimeout(() => {
+            if (textOverlay) {
+              textOverlay.remove();
+              textOverlay = null;
+            }
+          }, 300);
+        } else {
+          // If overlay is not visible, show it immediately
+          if (currentImage.LongFormText) {
+            createTextOverlay(currentImage.LongFormText);
+          }
+        }
+      }
+
+      // Initial setup when gallery is opened
+      galleryContent.addEventListener('mouseenter', handleMouseEnter);
+      galleryContent.addEventListener('mouseleave', handleMouseLeave);
+      galleryContent.addEventListener('click', handleClick);
+
+      // Navigation handlers
+      prevBtn.onclick = () => {
+        currentIndex = (currentIndex - 1 + images.length) % images.length;
+        updateGallery();
+      };
+
+      nextBtn.onclick = () => {
+        currentIndex = (currentIndex + 1) % images.length;
+        updateGallery();
+      };
+
+      // Close handler
+      closeBtn.onclick = () => {
+        modal.classList.remove('active');
+        setTimeout(() => {
+          modal.style.display = 'none';
+          // Cleanup
+          clearTimeout(hoverTimer);
+          if (textOverlay) {
+            textOverlay.remove();
+            textOverlay = null;
+          }
+          // Remove event listeners to prevent stacking
+          galleryContent.removeEventListener('mouseenter', handleMouseEnter);
+          galleryContent.removeEventListener('mouseleave', handleMouseLeave);
+          galleryContent.removeEventListener('click', handleClick);
+        }, 300);
+      };
+
+      // Show or hide navigation based on image count
+      if (images.length > 1) {
+        galleryNav.style.display = 'flex';
+      } else {
+        galleryNav.style.display = 'none';
+      }
+
+      // Show modal
+      modal.style.display = 'flex';
+      requestAnimationFrame(() => {
+        modal.classList.add('active');
+      });
+
+      // Initial gallery update
+      updateGallery();
+    }
+    
+    // Keep the existing changeSize function
+    function changeSize(size) {
+      const grid = document.querySelector('.image-grid');
+      grid.className = `image-grid ${size}`;
+    }
+
+    // Add to your JavaScript
+    document.addEventListener('scroll', () => {
+      const header = document.querySelector('h1');
+      const images = document.querySelectorAll('.image-container');
+      
+      images.forEach(image => {
+        const rect = image.getBoundingClientRect();
+        const headerRect = header.getBoundingClientRect();
+        
+        if (rect.top < headerRect.bottom && rect.bottom > headerRect.top) {
+          header.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+        } else {
+          header.style.backgroundColor = 'transparent';
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>

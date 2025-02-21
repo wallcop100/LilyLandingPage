@@ -1,0 +1,119 @@
+@import url('https://fonts.googleapis.com/css2?family=Edu+VIC+WA+NT+Beginner:wght@400..700&display=swap');
+
+body {
+    margin: 0;
+    background-color: #f0f0f0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.gallery {
+    position: relative;
+    width: 80%;
+    max-width: 800px;
+    perspective: 1000px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.blocks-container {
+    display: flex;
+    transition: transform 2s ease-in-out;
+}
+
+.block {
+    width: 50mm;
+    height: 35mm;
+    margin: 0 15px;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 2s ease;
+    transform-origin: center;
+    opacity: 0;
+}
+
+.block.visible {
+    opacity: 1;
+}
+
+.block-front,
+.block-back,
+.block-side {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden; /* Ensures the back face is not visible when turned away */
+    border: 1px transparent white;
+    box-sizing: border-box;
+}
+
+.block-front {
+    background-size: cover;
+    background-position: center;
+}
+
+.block-back {
+    position: absolute;
+    left:1px;
+    background-color: white;
+    color: rgba(0, 0, 0, 0.555);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    transform-origin:bottom;
+    align-items: center;
+    font-size: 30px;
+    text-align: center;
+    padding: 10px;
+    line-height: 1.4em;
+    font-family: ;
+    background: url('images/paper.jpg') center/cover;
+    transform: translateZ(-11mm) rotateY(180deg);
+}
+
+.block:hover {
+    transform: rotateY(180deg);
+}
+
+
+.block-sides {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 12mm;  /* Side width */
+    height: 100%;
+    box-sizing: border-box;
+    background-image: inherit;
+    background-size: 1px 100%; /* Stretch a single pixel vertically */
+    background-position: right center; /* Focus on the left edge of the image */
+    transform: rotateY(90deg);
+    transform-origin: left;
+    z-index: -1; /* Ensure it's behind the front face */
+    border: 1px transparent white;
+}
+
+.arrow {
+    font-size: 2em;
+    cursor: pointer;
+    user-select: none;
+}
+
+.left {
+    position: absolute;
+    left: -50px;
+}
+
+.right {
+    position: absolute;
+    right: -50px;
+}
+
+@media (max-width: 600px) {
+
+    .arrow {
+        font-size: 1.5em;
+    }
+}

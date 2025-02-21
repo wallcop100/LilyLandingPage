@@ -2,99 +2,25 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="description" content="Discover the unique and captivating art of Lily Rees.">
   <meta name="keywords" content="Lily Rees, artist, multimedia art, drawings, paintings, multimedia, artworks, art gallery, art exhibitions, art commissions">
   <meta name="author" content="Lily Rees">
   <link href='https://fonts.googleapis.com/css?family=Poppins' rel='stylesheet'>
+  <link href='styles.css' rel='stylesheet'>
   <link rel="stylesheet" href="font-awesome-4.7.0/css/font-awesome.min.css">
   <link rel="icon" type="image/x-icon" href="https://i.imgur.com/JEmi9ed.png">
   <title>Lily Rees</title>
-  <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      height: 100vh; /* Set body height to 100 viewport height for mobile */
-    }
-
-    #test {
-      height: 100vh; /* Set height for #test div */
-      display: flex; /* Allow flexbox for content layout within #test */
-      flex-direction: column; /* Stack content vertically within #test */
-    }
-
-    .banner-box {
-      flex: 1; /* Take up remaining space after header and socials */
-      display: flex;
-      flex-direction: column;
-      justify-content: center; /* Center content vertically */
-      align-items: center; /* Center content horizontally */
-      text-align: center; /* Center text for mobile */
-      color: white;
-    }
-
-    h1 {
-      font-family: 'Poppins';
-      font-size: calc(8vw + 2rem); /* Adjust font size for mobile and desktop */
-      letter-spacing: 0.15cap;
-      line-height: 1.2;
-      margin-bottom: 1rem;
-    }
-
-    h2 {
-      font-family: 'Poppins';
-      font-size: 1.5rem;
-      letter-spacing: 0.04cap;
-      line-height: 1.2;
-    }
-
-    #socials-container {
-      display: flex;
-      justify-content: center; /* Space icons evenly */
-      margin-bottom: 1rem; /* Add some space between socials and content */
-    }
-
-    #socials-container a {
-      color: white;
-      font-size: 3rem;
-      padding-top: 10rem;
-      padding-left: 3rem;
-      padding-right: 3rem;
-      padding-bottom: 0rem;
-    }
-
-    .button {
-      background-color: #c8c5e6; /* Light blue from background colors */
-      padding: 1rem 2rem;
-      border: none;
-      border-radius: 50px;
-      color: white;
-      font-family: 'Poppins';
-      font-size: 1rem;
-      cursor: pointer;
-      
-      padding-bottom: ;
-      align-self: center; /* Center button horizontally within #test */
-    }
-
-    #button-container{
-        padding-top: 2rem;
-    }
-
-    /* Media query for smaller screens */
-    @media(max-width: 800px) {
-      h1 {
-        font-size: calc(10vw + 2rem);
-      }
-    }
-  </style>
+  
 </head>
-<body>
+<body style="height: 100vh;">
   <div id="test">
+  <div class="fade_med">
     <div class="banner-box">
       <h1>Lily Rees</h1>
       <h2>Multimedia Artist</h2>
-
+      
+  <div class="fade">
       <div id="socials-container">
         <a href="https://www.linkedin.com/in/lilyrees/"> <i class="fa fa-linkedin" aria-hidden="true"></i>
         </a>
@@ -103,17 +29,20 @@
         <a href="mailto:contact@lilyrees.co.uk"> <i class="fa fa-envelope-o" aria-hidden="true"></i>
         </a>
       </div>
-      <div id="button-container"></div>
-        <button class="button", onclick="window.location.href='https://blocks.lilyrees.co.uk'">Latest Project</button>
-
-    </div>
-    
-
-    
-    
-
-
-    
+      <h3 style="cursor: pointer;" onclick="window.location.href='https://www.artistsfuturesfund.org/2024-25-fellows/lily-rees'"><i class="fa fa-external-link-square"></i> Artists Futures Fund Breakthrough Artist Fellow 2024⁠–⁠25 </h3>
+      <div id="flex_row">
+        <div id="button-container">
+          <button class="button", onclick="window.location.href='https://blocks.lilyrees.co.uk'">Latest Project</button>
+        </div>
+        <div id="button-container">
+          <button class="button_low", onclick="window.location.href='/portfolio.html'">Current Portfolio</button>
+        </div>
+        <!--
+        <div id="button-container">
+          <button class="button_low", onclick="window.location.href='/exhibitions.html'">Exhibitions</button>
+        </div>
+        -->
+      </div>
   </div>
 
   <script src="https://kit.fontawesome.com/your_fontawesome_kit_id.js"></script> <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>

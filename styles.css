@@ -1,0 +1,314 @@
+html, body {
+      margin: 0;
+      padding: 0;
+      background: rgb(25,67,75);
+      background: linear-gradient(45deg, rgba(25,67,75,1) 0%, rgba(26,81,92,1) 57%);
+    }
+
+    #test {
+      justify-content: center;
+      height: 100%; /* Set height for #test div */
+      display: flex; /* Allow flexbox for content layout within #test */
+      flex-direction: column; /* Stack content vertically within #test */
+    }
+
+    .links_flex {
+        display: flex;
+        flex-direction: column;
+        padding: 30px;
+        scale: calc(100% - 1vw);
+        gap: 2rem; /* Add space between links */
+    }
+
+    .link_text {
+      font-family: 'Helvetica';
+      font-size: clamp(1.5rem, 4vh, 2.5rem);
+      letter-spacing: 0.04cap;
+      line-height: 1.5;
+      color: white;
+      font-weight: 200;
+      margin-top: 2rem; /* Increase top spacing */
+    }
+
+    .link_text a { 
+      position:relative;
+    }
+    .link_text a span{ 
+      position:absolute; 
+      display:none; 
+      z-index:99; 
+    }
+    .link_text a:hover span { 
+      display:block; 
+      padding-left: 50vw; 
+      transition: 300ms;} 
+
+
+    .banner-box {
+      flex: 1; /* Take up remaining space after header and socials */
+      display: flex;
+      flex-direction: column;
+      justify-content: center; /* Center content vertically */
+      align-items: center; /* Center content horizontally */
+      text-align: center; /* Center text for mobile */
+      color: white;
+    }
+
+    a{
+        color: white;
+    }
+
+
+    .fade {
+      animation: fadeIn 3s;
+      -webkit-animation: fadeIn 3s;
+      -moz-animation: fadeIn 3s;
+      -o-animation: fadeIn 3ms;
+      -ms-animation: fadeIn 3s;
+    }
+
+    .fade_fast {
+        animation: fadeIn 300ms;
+        -webkit-animation: fadeIn 300ms;
+        -moz-animation: fadeIn 300ms;
+        -o-animation: fadeIn 300ms;
+        -ms-animation: fadeIn 300ms;
+      }
+
+    h1 {
+      font-family: 'Poppins';
+      font-size: calc(8vw + 2rem); /* Adjust font size for mobile and desktop */
+      letter-spacing: 0.20cap;
+      line-height: 1.2;
+      margin-bottom: 1rem;
+      color: white;
+      font-weight: 1000;
+    }
+
+    h2 {
+      font-family: 'Poppins';
+      font-size: 2rem;
+      letter-spacing: 0.04cap;
+      line-height: 1.2;
+      color: white;
+      font-weight: 100;
+    }
+
+    h3 {
+      font-family: 'Poppins';
+      font-size: 1rem;
+      letter-spacing: 0.20cap;
+    }
+
+    
+
+    #socials-container {
+      display: flex;
+      justify-content: center; /* Space icons evenly */
+      margin-bottom: 1rem; /* Add some space between socials and content */
+      gap: 2rem;
+      padding: 2rem 1rem;
+      flex-wrap: wrap; /* Allow wrapping on mobile */
+    }
+
+    #socials-container a {
+      color: white;
+      font-size: clamp(2rem, 5vw, 3rem);
+      padding: 1rem;
+    }
+
+    #socials-container a:hover {
+      color: #e9e9ff;
+      transform: translateY(-2px);
+    }
+
+    .button {
+      background-color: #c8c5e6ef; /* Light blue from background colors */
+      padding: 1rem 2rem;
+      border: none;
+      border-radius: 50px;
+      color: white;
+      font-family: 'Poppins';
+      font-size: 1rem;
+      cursor: pointer;
+      
+      padding-bottom: ;
+      align-self: center; /* Center button horizontally within #test */
+    }
+
+    .button_low {
+      background-color: #c8c5e6ef; /* Light blue from background colors */
+      padding: 1rem 2rem;
+      border: none;
+      border-radius: 50px;
+      color: white;
+      font-family: 'Poppins';
+      font-size: 1rem;
+      cursor: pointer;
+      
+      padding-bottom: ;
+      align-self: center; /* Center button horizontally within #test */
+    }
+
+    #flex_row{
+      display: flex;
+      flex-direction: row;
+      padding-top: 2rem;
+      align-items: center;
+    }
+
+    #button-container{
+      padding-top: 2rem;
+      padding: 20px;
+    }
+
+      @keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+  }
+
+  
+
+  @-moz-keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+  }
+
+  @-webkit-keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+  }
+
+  @-o-keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+  }
+
+  @-ms-keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+  }
+
+    /* Media query for smaller screens */
+    @media(max-width: 800px) {
+      h1 {
+        font-size: calc(10vw + 2rem);
+      }
+      #button-container{
+      scale: 90%;
+      padding: 0;
+    }
+    h4 {
+        font-family: 'Poppins';
+        font-size: 4vh;
+        letter-spacing: 0.04cap;
+        line-height: 1.2;
+        color: white;
+      }
+    }
+    @media (max-width: 768px) {
+  .site-link {
+    top: 1rem;
+    right: 1rem;
+    font-size: 0.875rem;
+    padding: 0.5rem 1rem;
+  }
+    .links_flex {
+        padding: 20px;
+        gap: 1.5rem;
+    }
+
+    .link_text {
+        font-size: clamp(1.2rem, 3vh, 2rem);
+    }
+
+    #socials-container {
+        gap: 1rem;
+        padding: 1rem;
+    }
+
+    #socials-container a {
+        padding: 0.5rem;
+    }
+
+    .button, .button_low {
+        padding: 0.8rem 1.6rem;
+        font-size: 0.9rem;
+    }
+
+    #button-container {
+        scale: 100%;
+        padding: 1rem;
+    }
+
+  .banner-box {
+    padding: 1rem;
+    margin-top: -2rem;
+  }
+
+  h1 {
+    font-size: 5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  h3 {
+    font-size: 0.9rem;
+    line-height: 1.4;
+    padding: 0 1rem;
+    margin-top: 2rem;
+  }
+
+  #flex_row {
+    flex-direction: column;
+    padding-top: 1rem;
+    gap: 0.5rem;
+  }
+
+  #button-container {
+    padding: 0.5rem;
+    scale: 100%;
+  }
+
+  .button, .button_low {
+    padding: 0.8rem 1.6rem;
+    font-size: 0.9rem;
+    width: 200px;
+  }
+
+  #socials-container {
+    gap: 1.5rem;
+    padding: 1rem;
+  }
+
+  #socials-container a {
+    font-size: 1.8rem;
+    padding: 0.5rem;
+  }
+
+  #test {
+    justify-content: center;
+    padding: 1rem;
+    height: 96.5%;
+  }
+}
+
+@media (max-width: 480px) {
+  h1 {
+    font-size: 5rem;
+  }
+
+  h2 {
+    font-size: 1.2rem;
+  }
+
+  .button, .button_low {
+    width: 180px;
+    padding: 0.7rem 1.4rem;
+    font-size: 0.8rem;
+  }
+}
