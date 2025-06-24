@@ -67,6 +67,33 @@ html, body {
       -ms-animation: fadeIn 3s;
     }
 
+    .tooltip {
+      position: relative;
+    }
+    
+    .tooltip:before {
+      content: 'Coming Soon';
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 0.5rem 1rem;
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      border-radius: 4px;
+      font-size: 0.875rem;
+      white-space: nowrap;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+      margin-bottom: 0.5rem;
+    }
+    
+    .tooltip:hover:before {
+      opacity: 1;
+      visibility: visible;
+    }
+
     .fade_fast {
         animation: fadeIn 300ms;
         -webkit-animation: fadeIn 300ms;
@@ -78,7 +105,7 @@ html, body {
     h1 {
       font-family: 'Poppins';
       font-size: calc(8vw + 2rem); /* Adjust font size for mobile and desktop */
-      letter-spacing: 0.20cap;
+      letter-spacing: 0.05cap;
       line-height: 1.2;
       margin-bottom: 1rem;
       color: white;
