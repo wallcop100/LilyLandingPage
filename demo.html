@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Waterflow Image Animation</title>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: white;
+    overflow: hidden;
+  }
+  canvas {
+    display: block;
+  }
+</style>
+</head>
+<body>
+
+<canvas id="canvas"></canvas>
+
+<script>
+let imageIndex = 0;
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+
+function resize() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+window.addEventListener("resize", resize);
+resize();
+
+// Replace with your own image paths
+const imageSources = [
+"waterfallimages/band.png",
+"waterfallimages/bankcard.png",
+"waterfallimages/button.png",
+"waterfallimages/coin 1.png",
+"waterfallimages/coin2.png",
+"waterfallimages/cream.png",
+"waterfallimages/earring.png",
+"waterfallimages/greeen1.png",
+"waterfallimages/gum.png",
+"waterfallimages/ID.png",
+"waterfallimages/keys.png",
+"waterfallimages/lipbalm.png",
+"waterfallimages/lipgloss.png",
+"waterfallimages/money(3).png",
+"waterfallimages/pencil.png",
+"waterfallimages/photo.png",
+"waterfallimages/pill.png",
+"waterfallimages/pills.png",
+"waterfallimages/pin.png",
+"waterfallimages/ring.png",
+"waterfallimages/scissors.png",
+"waterfallimages/trainticket.png",
+"waterfallimages/banana.png",
+"waterfallimages/badge.png",
+"waterfallimages/paperclip.png"
+
+];
+
+const images = imageSources.map(src => {
+  const img = new Image();
+  img.src = src;
+  return img;
+});
+
+const particles = [];
+const COUNT = 100;
+
+function rand(min, max) {
+  return Math.random() * (max - min) + min;
+}
+function randomHue() {
+  const ranges = [
+    [180, 220], // blue
+    [260, 300], // purple
+    [90, 150]   // green
+  ];
+  const r = ranges[Math.floor(Math.random() * ranges.length)];
+  return rand(r[0], r[1]);
+}
+
+function createParticle() {
+    const img = images[imageIndex];
+  imageIndex = (imageIndex + 1) % images.length;
+  const scale = rand(0.15, 0.4);
+  const w = img.naturalWidth * scale;
+  const h = img.naturalHeight * scale;
+
+  return {
+    img,
+    x: rand(-w, canvas.width + w),
+    y: -h - rand(20, canvas.height),
+    speed: rand(0.5, 2.5),
+    scale,
+    hue: randomHue(),
+    alpha: rand(0.4, 0.9),
+    rotation: rand(0, 360),
+    rotationSpeed: rand(-0.005, 0.015)
+  };
+}
+
+
+for (let i = 0; i < COUNT; i++) {
+  particles.push(createParticle());
+}
+
+function animate() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  particles.forEach(p => {
+    if (!p.img.complete) return;
+
+    const w = p.img.naturalWidth * p.scale;
+    const h = p.img.naturalHeight * p.scale;
+
+    ctx.save();
+    ctx.translate(p.x + w / 2, p.y + h / 2);
+    ctx.rotate(p.rotation);
+    ctx.globalAlpha = p.alpha;
+    ctx.filter = `hue-rotate(${p.hue}deg)`;
+    ctx.drawImage(p.img, -w / 2, -h / 2, w, h);
+    ctx.filter = "none";
+    ctx.restore();
+
+
+    p.y += p.speed;
+
+    if (p.y > canvas.height + h) {
+      Object.assign(p, createParticle());
+      p.y = -h;
+    }
+  });
+
+  requestAnimationFrame(animate);
+}
+
+animate();
+</script>
+
+</body>
+</html>
