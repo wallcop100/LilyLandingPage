@@ -84,7 +84,7 @@ function randomHue() {
 }
 
 function createParticle() {
-    const img = images[imageIndex];
+  const img = images[imageIndex];
   imageIndex = (imageIndex + 1) % images.length;
   const scale = rand(0.15, 0.4);
   const w = img.naturalWidth * scale;
@@ -94,10 +94,12 @@ function createParticle() {
     img,
     x: rand(-w, canvas.width + w),
     y: -h - rand(20, canvas.height),
-    speed: rand(0.1, 3),
+    speed: rand(0.2, 2),
     scale,
-    hue: randomHue(),
-    alpha: rand(0.4, 0.9),
+    alpha: 0,                      // start invisible
+    targetAlpha: rand(0.4, 0.9),   // fade-to value
+    fadeSpeed: rand(0.01, 0.03),   // fade-in rate
+    //hue: randomHue(),
     rotation: rand(0, 360),
     rotationSpeed: rand(-0.005, 0.015)
   };
@@ -113,6 +115,9 @@ function animate() {
 
   particles.forEach(p => {
     if (!p.img.complete) return;
+    if (p.alpha < p.targetAlpha) {
+      p.alpha = Math.min(p.alpha + p.fadeSpeed, p.targetAlpha);
+    }
 
     const w = p.img.naturalWidth * p.scale;
     const h = p.img.naturalHeight * p.scale;
