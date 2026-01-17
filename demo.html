@@ -2,122 +2,407 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<title>Background Demo</title>
+<title>Fabric Waterfall Background</title>
 <style>
   html, body {
     margin: 0;
     padding: 0;
+    width: 100%;
+    height: 100%;
     background: white;
     overflow: hidden;
+    font-family: sans-serif;
   }
+  
   canvas {
     display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* ===== SECRET PANEL ===== */
+  #panel {
+    position: fixed;
+    top: 0;
+    right: -400px; /* Fully hidden - extra hiding */
+    width: 280px;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: -4px 0 12px rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    transition: right 0.3s ease;
+    z-index: 10;
+    overflow-y: auto;
+  }
+
+  #panel.open { 
+    right: 0; 
+  }
+
+  #tab {
+    position: fixed;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+    background: rgba(220, 220, 220, 0.9);
+    padding: 12px 8px;
+    cursor: pointer;
+    border-radius: 6px 0 0 6px;
+    z-index: 11;
+    font-size: 18px;
+    transition: background 0.2s;
+  }
+
+  #tab:hover {
+    background: rgba(200, 200, 200, 0.95);
+  }
+
+  #panel h3 {
+    margin-top: 0;
+    margin-bottom: 16px;
+    font-size: 16px;
+    color: #333;
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 8px;
+  }
+
+  #panel label {
+    display: block;
+    margin-bottom: 20px;
+    font-size: 13px;
+    color: #555;
+  }
+
+  #panel .value-display {
+    float: right;
+    font-weight: bold;
+    color: #333;
+  }
+
+  /* Custom slider styling */
+  .slider-container {
+    position: relative;
+    width: 100%;
+    height: 40px;
+    margin-top: 8px;
+  }
+
+  input[type="range"] {
+    position: absolute;
+    width: 100%;
+    height: 40px;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 2;
+  }
+
+  .slider-track {
+    position: absolute;
+    width: 100%;
+    height: 40px;
+    background: #e0e0e0;
+    border-radius: 20px;
+    overflow: hidden;
+  }
+
+  .slider-thumb {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    pointer-events: none;
+    transition: left 0.05s ease;
+  }
+
+  #resetBtn {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    background: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  #resetBtn:hover {
+    background: #45a049;
+  }
+
+  #resetBtn:active {
+    background: #3d8b40;
   }
 </style>
 </head>
 <body>
 
+<div id="tab">⚙️</div>
+<div id="panel">
+  <h3>Particles</h3>
+  
+  <label>
+    Count <span class="value-display" id="count-val">75</span>
+    <div class="slider-container">
+      <div class="slider-track"></div>
+      <div class="slider-thumb" id="count-thumb" style="background-image: url('waterfallimages/button.png')"></div>
+      <input id="count" type="range" min="10" max="200" value="75">
+    </div>
+  </label>
+  
+  <label>
+    Speed <span class="value-display" id="speed-val">2.0</span>
+    <div class="slider-container">
+      <div class="slider-track"></div>
+      <div class="slider-thumb" id="speed-thumb" style="background-image: url('waterfallimages/button.png')"></div>
+      <input id="speed" type="range" min="0.2" max="4" step="0.1" value="2">
+    </div>
+  </label>
+  
+  <label>
+    Max Scale <span class="value-display" id="scale-val">0.40</span>
+    <div class="slider-container">
+      <div class="slider-track"></div>
+      <div class="slider-thumb" id="scale-thumb" style="background-image: url('waterfallimages/coin2.png')"></div>
+      <input id="scale" type="range" min="0.15" max="0.8" step="0.05" value="0.4">
+    </div>
+  </label>
+  
+  <label>
+    Rotation Speed <span class="value-display" id="rot-val">0.005</span>
+    <div class="slider-container">
+      <div class="slider-track"></div>
+      <div class="slider-thumb" id="rotation-thumb" style="background-image: url('waterfallimages/lipbalm.png')"></div>
+      <input id="rotation" type="range" min="0" max="0.02" step="0.001" value="0.005">
+    </div>
+  </label>
+  
+  <label>
+    Fade Speed <span class="value-display" id="fade-val">0.02</span>
+    <div class="slider-container">
+      <div class="slider-track"></div>
+      <div class="slider-thumb" id="fade-thumb" style="background-image: url('waterfallimages/coin\ 1.png')"></div>
+      <input id="fadeSpeed" type="range" min="0.01" max="0.1" step="0.01" value="0.02">
+    </div>
+  </label>
+
+  <button id="resetBtn">Reset to Defaults</button>
+</div>
+
 <canvas id="canvas"></canvas>
 
+<script src="imageList.js"></script>
 <script>
-let imageIndex = 0;
+/* ================= PANEL TOGGLE ================= */
+document.getElementById("tab").onclick = () => {
+  document.getElementById("panel").classList.toggle("open");
+};
+
+/* ================= CANVAS ================= */
+const centerImage = new Image();
+centerImage.src = "background(1).png";
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
+/* ================= FABRIC CACHE ================= */
+const fabricCanvas = document.createElement("canvas");
+const fabricCtx = fabricCanvas.getContext("2d");
+
+function buildFabric() {
+  fabricCanvas.width = canvas.width;
+  fabricCanvas.height = canvas.height;
+
+  fabricCtx.fillStyle = "#ffffff";
+  fabricCtx.fillRect(0, 0, fabricCanvas.width, fabricCanvas.height);
+
+  fabricCtx.strokeStyle = "rgba(180,170,160,0.8)";
+  fabricCtx.lineWidth = 0.3;
+
+  const size = 8;
+  for (let x = 0; x < fabricCanvas.width; x += size) {
+    for (let y = 0; y < fabricCanvas.height; y += size) {
+      fabricCtx.beginPath();
+      fabricCtx.moveTo(x + size * 0.25, y + size / 2);
+      fabricCtx.lineTo(x + size * 0.75, y + size / 2);
+      fabricCtx.moveTo(x + size / 2, y + size * 0.25);
+      fabricCtx.lineTo(x + size / 2, y + size * 0.75);
+      fabricCtx.stroke();
+    }
+  }
+}
+
+/* ================= RESIZE ================= */
 function resize() {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
+  buildFabric();
 }
 window.addEventListener("resize", resize);
 resize();
 
-// Replace with your own image paths
-const imageSources = [
-"waterfallimages/band.png",
-"waterfallimages/bankcard.png",
-"waterfallimages/button.png",
-"waterfallimages/coin 1.png",
-"waterfallimages/coin2.png",
-"waterfallimages/cream.png",
-"waterfallimages/earring.png",
-"waterfallimages/greeen1.png",
-"waterfallimages/gum.png",
-"waterfallimages/ID.png",
-"waterfallimages/keys.png",
-"waterfallimages/lipbalm.png",
-"waterfallimages/lipgloss.png",
-"waterfallimages/money(3).png",
-"waterfallimages/pencil.png",
-"waterfallimages/photo.png",
-"waterfallimages/pill.png",
-"waterfallimages/pills.png",
-"waterfallimages/pin.png",
-"waterfallimages/ring.png",
-"waterfallimages/scissors.png",
-"waterfallimages/trainticket.png",
-"waterfallimages/banana.png",
-"waterfallimages/badge.png",
-"waterfallimages/paperclip.png"
+/* ================= IMAGE PICKER ================= */
+let imageIndex = 0;
 
-];
+function nextImage() {
+  for (let i = 0; i < imageList.length; i++) {
+    const item = imageList[imageIndex];
+    imageIndex = (imageIndex + 1) % imageList.length;
+    if (Math.random() <= item.weight) {
+      return item.img;
+    }
+  }
+  return imageList[0].img;
+}
 
-const images = imageSources.map(src => {
-  const img = new Image();
-  img.src = src;
-  return img;
-});
-
-const particles = [];
-const COUNT = 75;
-
+/* ================= UTILS ================= */
 function rand(min, max) {
   return Math.random() * (max - min) + min;
 }
-function randomHue() {
-  const ranges = [
-    [180, 220], // blue
-    [260, 300], // purple
-    [90, 150]   // green
-  ];
-  const r = ranges[Math.floor(Math.random() * ranges.length)];
-  return rand(r[0], r[1]);
+
+/* ================= CONTROLS ================= */
+const controls = {
+  count: document.getElementById("count"),
+  speed: document.getElementById("speed"),
+  scale: document.getElementById("scale"),
+  rotation: document.getElementById("rotation"),
+  fadeSpeed: document.getElementById("fadeSpeed")
+};
+
+const thumbs = {
+  count: document.getElementById("count-thumb"),
+  speed: document.getElementById("speed-thumb"),
+  scale: document.getElementById("scale-thumb"),
+  rotation: document.getElementById("rotation-thumb"),
+  fadeSpeed: document.getElementById("fade-thumb")
+};
+
+// Update thumb positions
+function updateThumbPosition(slider, thumb) {
+  const min = parseFloat(slider.min);
+  const max = parseFloat(slider.max);
+  const val = parseFloat(slider.value);
+  const percent = (val - min) / (max - min);
+  const thumbWidth = 40; // Width of thumb image
+  const trackWidth = slider.offsetWidth;
+  const position = percent * (trackWidth - thumbWidth);
+  thumb.style.left = position + 'px';
 }
 
-function createParticle() {
-  const img = images[imageIndex];
-  imageIndex = (imageIndex + 1) % images.length;
-  const scale = rand(0.15, 0.4);
-  const w = img.naturalWidth * scale;
-  const h = img.naturalHeight * scale;
+// Update value displays and thumb positions
+function updateDisplays() {
+  document.getElementById("count-val").textContent = controls.count.value;
+  document.getElementById("speed-val").textContent = Number(controls.speed.value).toFixed(1);
+  document.getElementById("scale-val").textContent = Number(controls.scale.value).toFixed(2);
+  document.getElementById("rot-val").textContent = Number(controls.rotation.value).toFixed(3);
+  document.getElementById("fade-val").textContent = Number(controls.fadeSpeed.value).toFixed(2);
+  
+  // Update thumb positions
+  updateThumbPosition(controls.count, thumbs.count);
+  updateThumbPosition(controls.speed, thumbs.speed);
+  updateThumbPosition(controls.scale, thumbs.scale);
+  updateThumbPosition(controls.rotation, thumbs.rotation);
+  updateThumbPosition(controls.fadeSpeed, thumbs.fadeSpeed);
+}
 
+controls.count.oninput = updateDisplays;
+controls.speed.oninput = updateDisplays;
+controls.scale.oninput = updateDisplays;
+controls.rotation.oninput = updateDisplays;
+controls.fadeSpeed.oninput = updateDisplays;
+
+// Initialize thumb positions on load
+window.addEventListener('load', updateDisplays);
+updateDisplays();
+
+/* ================= RESET BUTTON ================= */
+const defaults = {
+  count: 65,
+  speed: 2,
+  scale: 0.3,
+  rotation: 0.005,
+  fadeSpeed: 0.02
+};
+
+document.getElementById("resetBtn").onclick = () => {
+  controls.count.value = defaults.count;
+  controls.speed.value = defaults.speed;
+  controls.scale.value = defaults.scale;
+  controls.rotation.value = defaults.rotation;
+  controls.fadeSpeed.value = defaults.fadeSpeed;
+  
+  updateDisplays();
+  syncParticles();
+  
+  // Reset all existing particles
+  particles.forEach((p, index) => {
+    Object.assign(p, createParticle());
+  });
+};
+
+/* ================= PARTICLES ================= */
+const particles = [];
+
+function createParticle() {
+  const img = nextImage();
   return {
     img,
-    x: rand(-w, canvas.width + w),
-    y: -h - rand(20, canvas.height),
-    speed: rand(0.2, 2),
-    scale,
-    alpha: 0,                      // start invisible
-    targetAlpha: rand(0.4, 0.9),   // fade-to value
-    fadeSpeed: rand(0.01, 0.03),   // fade-in rate
-    //hue: randomHue(),
-    rotation: rand(0, 360),
-    rotationSpeed: rand(-0.005, 0.015)
+    x: rand(-100, canvas.width + 100),
+    y: -rand(50, 200),
+    speed: rand(0.4, Number(controls.speed.value)),
+    scale: rand(0.15, Number(controls.scale.value)),
+    alpha: 0,
+    fadeSpeed: Number(controls.fadeSpeed.value),
+    rotation: rand(0, Math.PI * 2),
+    rotationSpeed: rand(-Number(controls.rotation.value), Number(controls.rotation.value))
   };
 }
 
-
-for (let i = 0; i < COUNT; i++) {
-  particles.push(createParticle());
+function syncParticles() {
+  while (particles.length < controls.count.value) {
+    particles.push(createParticle());
+  }
+  particles.length = controls.count.value;
 }
 
+syncParticles();
+controls.count.oninput = () => {
+  syncParticles();
+  updateDisplays();
+};
+
+/* ================= ANIMATION ================= */
 function animate() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+  // Draw fabric
+  ctx.drawImage(fabricCanvas, 0, 0);
+
+  // Draw center image
+  if (centerImage.complete) {
+    const scale = Math.min(canvas.width, canvas.height) / 2000;
+    const w = centerImage.naturalWidth * scale;
+    const h = centerImage.naturalHeight * scale;
+
+    ctx.globalAlpha = 0.95;
+    ctx.drawImage(
+      centerImage,
+      (canvas.width - w) / 2,
+      50%+(canvas.height - h) / 2,
+      w,
+      h
+    );
+    ctx.globalAlpha = 1;
+  }
+
+  // Draw particles
   particles.forEach(p => {
     if (!p.img.complete) return;
-    if (p.alpha < p.targetAlpha) {
-      p.alpha = Math.min(p.alpha + p.fadeSpeed, p.targetAlpha);
-    }
+
+    p.alpha = Math.min(1, p.alpha + p.fadeSpeed);
 
     const w = p.img.naturalWidth * p.scale;
     const h = p.img.naturalHeight * p.scale;
@@ -126,17 +411,14 @@ function animate() {
     ctx.translate(p.x + w / 2, p.y + h / 2);
     ctx.rotate(p.rotation);
     ctx.globalAlpha = p.alpha;
-    ctx.filter = `hue-rotate(${p.hue}deg)`;
     ctx.drawImage(p.img, -w / 2, -h / 2, w, h);
-    ctx.filter = "none";
     ctx.restore();
 
-
     p.y += p.speed;
+    p.rotation += p.rotationSpeed;
 
     if (p.y > canvas.height + h) {
       Object.assign(p, createParticle());
-      p.y = -h;
     }
   });
 
