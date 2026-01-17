@@ -167,7 +167,7 @@
     Max Scale <span class="value-display" id="scale-val">0.40</span>
     <div class="slider-container">
       <div class="slider-track"></div>
-      <div class="slider-thumb" id="scale-thumb" style="background-image: url('waterfallimages/coin2.png')"></div>
+      <div class="slider-thumb" id="scale-thumb" style="background-image: url('waterfallimages/button.png')"></div>
       <input id="scale" type="range" min="0.15" max="0.8" step="0.05" value="0.4">
     </div>
   </label>
@@ -176,7 +176,7 @@
     Rotation Speed <span class="value-display" id="rot-val">0.005</span>
     <div class="slider-container">
       <div class="slider-track"></div>
-      <div class="slider-thumb" id="rotation-thumb" style="background-image: url('waterfallimages/lipbalm.png')"></div>
+      <div class="slider-thumb" id="rotation-thumb" style="background-image: url('waterfallimages/button.png')"></div>
       <input id="rotation" type="range" min="0" max="0.02" step="0.001" value="0.005">
     </div>
   </label>
@@ -185,7 +185,7 @@
     Fade Speed <span class="value-display" id="fade-val">0.02</span>
     <div class="slider-container">
       <div class="slider-track"></div>
-      <div class="slider-thumb" id="fade-thumb" style="background-image: url('waterfallimages/coin\ 1.png')"></div>
+      <div class="slider-thumb" id="fade-thumb" style="background-image: url('waterfallimages/button.png')"></div>
       <input id="fadeSpeed" type="range" min="0.01" max="0.1" step="0.01" value="0.02">
     </div>
   </label>
@@ -195,8 +195,43 @@
 
 <canvas id="canvas"></canvas>
 
-<script src="imageList.js"></script>
 <script>
+/* ================= IMAGE LIST ================= */
+const imageList = [
+  { src: "waterfallimages/band.png",        weight: 1 },
+  { src: "waterfallimages/bankcard.png",    weight: 1 },
+  { src: "waterfallimages/button.png",      weight: 1 },
+  { src: "waterfallimages/coin 1.png",      weight: 1 },
+  { src: "waterfallimages/coin2.png",       weight: 1 },
+  { src: "waterfallimages/cream.png",       weight: 1 },
+  { src: "waterfallimages/earring.png",     weight: 1 },
+  { src: "waterfallimages/greeen1.png",     weight: 1 },
+  { src: "waterfallimages/gum.png",         weight: 1 },
+  { src: "waterfallimages/ID.png",          weight: 1 },
+  { src: "waterfallimages/keys.png",        weight: 1 },
+  { src: "waterfallimages/lipbalm.png",     weight: 1 },
+  { src: "waterfallimages/lipgloss.png",    weight: 1 },
+  { src: "waterfallimages/money(3).png",    weight: 1 },
+  { src: "waterfallimages/pencil.png",      weight: 1 },
+  { src: "waterfallimages/photo.png",       weight: 1 },
+  { src: "waterfallimages/pill.png",        weight: 1 },
+  { src: "waterfallimages/pills.png",       weight: 1 },
+  { src: "waterfallimages/pin.png",         weight: 1 },
+  { src: "waterfallimages/ring.png",        weight: 0.3 },
+  { src: "waterfallimages/scissors.png",    weight: 1 },
+  { src: "waterfallimages/trainticket.png", weight: 1 },
+  { src: "waterfallimages/banana.png",      weight: 1 },
+  { src: "waterfallimages/badge.png",       weight: 1 },
+  { src: "waterfallimages/paperclip.png",   weight: 1 }
+];
+
+// Preload images
+imageList.forEach(i => {
+  const img = new Image();
+  img.src = i.src;
+  i.img = img;
+});
+
 /* ================= PANEL TOGGLE ================= */
 document.getElementById("tab").onclick = () => {
   document.getElementById("panel").classList.toggle("open");
@@ -320,9 +355,9 @@ updateDisplays();
 
 /* ================= RESET BUTTON ================= */
 const defaults = {
-  count: 65,
+  count: 75,
   speed: 2,
-  scale: 0.3,
+  scale: 0.4,
   rotation: 0.005,
   fadeSpeed: 0.02
 };
@@ -387,11 +422,11 @@ function animate() {
     const w = centerImage.naturalWidth * scale;
     const h = centerImage.naturalHeight * scale;
 
-    ctx.globalAlpha = 0.95;
+    ctx.globalAlpha = 0.15;
     ctx.drawImage(
       centerImage,
       (canvas.width - w) / 2,
-      50%+(canvas.height - h) / 2,
+      (canvas.height - h) / 2,
       w,
       h
     );
