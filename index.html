@@ -11,58 +11,106 @@
   <link rel="stylesheet" href="font-awesome-4.7.0/css/font-awesome.min.css">
   <link rel="icon" type="image/x-icon" href="https://i.imgur.com/JEmi9ed.png">
   <title>Lily Rees</title>
-  
 </head>
-<body style="height: 100vh;">
+<body>
+  <!-- Canvas background layer -->
+  <canvas id="canvas-bg"></canvas>
+  
+  <!-- Content layer -->
   <div id="test">
-  <div class="fade_med">
-    <div class="banner-box">
-      <h1>Lily Rees</h1>
-      <h2>Multimedia Artist</h2>
-      
-  <div class="fade">
-      <div id="socials-container">
-        <a href="https://www.linkedin.com/in/lilyrees/"> <i class="fa fa-linkedin" aria-hidden="true"></i>
-        </a>
-        <a href="https://instagram.com/lilybillylily_/"> <i class="fa fa-instagram" aria-hidden="true"></i>
-        </a>
-        <a href="mailto:contact@lilyrees.co.uk"> <i class="fa fa-envelope-o" aria-hidden="true"></i>
-        </a>
-        <a>
-
+    <div class="fade_med">
+      <div class="banner-box">
+        <h1>Lily Rees</h1>
+        <h2>Multimedia Artist</h2>
+        
+        <div class="fade">
+          <div id="socials-container">
+            <a href="https://www.linkedin.com/in/lilyrees/"> 
+              <i class="fa fa-linkedin" aria-hidden="true"></i>
+            </a>
+            <a href="https://instagram.com/lilybillylily_/"> 
+              <i class="fa fa-instagram" aria-hidden="true"></i>
+            </a>
+            <a href="mailto:contact@lilyrees.co.uk"> 
+              <i class="fa fa-envelope-o" aria-hidden="true"></i>
+            </a>
+          </div>
+          
+          <h3 style="cursor: pointer;" onclick="window.location.href='https://www.artistsfuturesfund.org/2024-25-fellows/lily-rees'">
+            <i class="fa fa-external-link-square"></i> Artists Futures Fund Breakthrough Artist Fellow 2024–25
+          </h3>
+          
+          <div id="flex_row">
+            <div id="button-container">
+              <button class="button_low tooltip">London Show 2025</button>
+            </div>
+            <div id="button-container">
+              <button class="button_low" onclick="window.location.href='/portfolio.html'">Current Portfolio</button>
+            </div>
+            <div id="button-container">
+              <button class="button_low tooltip">Residencies and Exhibitions</button>
+            </div>
+          </div>
+        </div>
       </div>
-      <h3 style="cursor: pointer;" onclick="window.location.href='https://www.artistsfuturesfund.org/2024-25-fellows/lily-rees'"><i class="fa fa-external-link-square"></i> Artists Futures Fund Breakthrough Artist Fellow 2024⁠–⁠25 </h3>
-      <div id="flex_row">
-        <div id="button-container">
-          <button class="button", onclick="window.location.href='https://blocks.lilyrees.co.uk'">Latest Project</button>
-        </div>
-        <div id="button-container">
-          <button class="button_low", onclick="window.location.href='/portfolio.html'">Current Portfolio</button>
-        </div>
-        <div id="button-container">
-          <button class="button_low tooltip">Exhibitions</button>
-        </div>
-      </div>
+    </div>
   </div>
-  <script src="https://kit.fontawesome.com/your_fontawesome_kit_id.js"></script> <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.fog.min.js"></script>
 
-  <script>
-    VANTA.FOG({
-      el: "#test",
-      mouseControls: false,
-      touchControls: false,
-      gyroControls: false,
-      minHeight: 200.00,
-      minWidth: 200.00,
-      highlightColor: 0xc8c5e6,
-      midtoneColor: 0x6b98be,
-      lowlightColor: 0xc5d0e0,
-      baseColor: 0x174751,
-      blurFactor: 0.90,
-      speed: 1.20,
-      zoom: 0.30
-    })
-  </script>
+  <!-- Control Panel -->
+  <div id="tab">⚙️</div>
+  <div id="panel">
+    <h3>Animation Controls</h3>
+    
+    <label>
+      Particle Count <span class="value-display" id="count-val">75</span>
+      <div class="slider-container">
+        <div class="slider-track"></div>
+        <div class="slider-thumb" id="count-thumb"></div>
+        <input type="range" id="count" min="10" max="200" value="75" step="1">
+      </div>
+    </label>
+
+    <label>
+      Fall Speed <span class="value-display" id="speed-val">2.0</span>
+      <div class="slider-container">
+        <div class="slider-track"></div>
+        <div class="slider-thumb" id="speed-thumb"></div>
+        <input type="range" id="speed" min="0.5" max="5" value="2" step="0.1">
+      </div>
+    </label>
+
+    <label>
+      Scale <span class="value-display" id="scale-val">0.40</span>
+      <div class="slider-container">
+        <div class="slider-track"></div>
+        <div class="slider-thumb" id="scale-thumb"></div>
+        <input type="range" id="scale" min="0.1" max="1" value="0.4" step="0.01">
+      </div>
+    </label>
+
+    <label>
+      Rotation Speed <span class="value-display" id="rot-val">0.005</span>
+      <div class="slider-container">
+        <div class="slider-track"></div>
+        <div class="slider-thumb" id="rotation-thumb"></div>
+        <input type="range" id="rotation" min="0" max="0.02" value="0.005" step="0.001">
+      </div>
+    </label>
+
+    <label>
+      Fade Speed <span class="value-display" id="fade-val">0.02</span>
+      <div class="slider-container">
+        <div class="slider-track"></div>
+        <div class="slider-thumb" id="fade-thumb"></div>
+        <input type="range" id="fadeSpeed" min="0.01" max="0.1" value="0.02" step="0.01">
+      </div>
+    </label>
+
+    <button id="resetBtn">Reset to Defaults</button>
+  </div>
+  <canvas id="canvas-fg"></canvas>
+  <script src="https://kit.fontawesome.com/your_fontawesome_kit_id.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+  <script src="/crossstitch.js"></script>
 </body>
 </html>
