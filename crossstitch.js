@@ -165,7 +165,7 @@ updateDisplays();
 
 /* ================= RESET BUTTON ================= */
 const defaults = {
-  count: 75,
+  count: 25,
   speed: 2,
   scale: 0.4,
   rotation: 0.005,
